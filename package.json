@@ -1,0 +1,53 @@
+{
+  "name": "@etzhayyim/checkpointer",
+  "version": "0.1.0-alpha",
+  "description": "LangGraph MstCheckpointSaver wire-protocol sidecar over a Unix socket -- projects checkpoint payloads to an atproto-shaped MST, builds a deterministic CAR, and enqueues the CAR for IPFS pin + L2 anchor. Relocated from etzhayyim/root:20-actors/etzhayyim-sdk/src/{checkpointer,checkpointer-bin}.ts per the kotoba-lang library-placement rule (ADR-2606302300).",
+  "license": "Apache-2.0",
+  "private": false,
+  "type": "module",
+  "main": "./dist/checkpointer.js",
+  "module": "./dist/checkpointer.js",
+  "types": "./dist/checkpointer.d.ts",
+  "bin": {
+    "etzhayyim-checkpointer": "./dist/checkpointer-bin.js"
+  },
+  "exports": {
+    ".": {
+      "import": "./dist/checkpointer.js",
+      "types": "./dist/checkpointer.d.ts"
+    },
+    "./*": {
+      "import": "./dist/*.js",
+      "types": "./dist/*.d.ts"
+    }
+  },
+  "scripts": {
+    "build": "tsc",
+    "typecheck": "tsc --noEmit",
+    "prepare": "tsc",
+    "prepublishOnly": "tsc"
+  },
+  "dependencies": {
+    "@atproto/repo": "^0.10.0",
+    "@etzhayyim/ipfs": "git+https://github.com/kotoba-lang/ipfs.git#main",
+    "@etzhayyim/pqh": "git+https://github.com/kotoba-lang/pqh.git#main",
+    "@msgpack/msgpack": "^3.1.3"
+  },
+  "devDependencies": {
+    "@types/node": "^25.9.2",
+    "typescript": "^6.0.3"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:kotoba-lang/checkpointer.git"
+  },
+  "homepage": "https://etzhayyim.com",
+  "keywords": [
+    "kotoba-lang",
+    "langgraph",
+    "checkpointer",
+    "atproto",
+    "mst",
+    "ipfs"
+  ]
+}

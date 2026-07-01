@@ -1,0 +1,38 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Install (ignore scripts -- mirrors git-dependency consumers)
+        run: npm install --ignore-scripts
+
+      - name: Typecheck
+        run: npm run typecheck
+
+      - name: Build
+        run: npm run build
+
+      - name: dist/ must be committed and in sync with src/
+        run: |
+          if [ -n "$(git status --porcelain dist/)" ]; then
+            echo "dist/ is out of sync with src/ -- run 'npm run build' and commit the result." >&2
+            git status --porcelain dist/
+            git diff dist/
+            exit 1
+          fi
