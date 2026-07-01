@@ -1,15 +1,16 @@
 # checkpointer
 
-`@etzhayyim/checkpointer` — a TypeScript sidecar implementing the LangGraph
-`MstCheckpointSaver` wire protocol over a Unix socket. A Python
+`kotoba-lang/checkpointer` — a JVM (Clojure) sidecar implementing the
+LangGraph `MstCheckpointSaver` wire protocol over a Unix socket. A Python
 `MstCheckpointSaver` sends msgpack-framed requests here; this sidecar
 projects each checkpoint payload to an atproto-shaped MST, builds a
 deterministic CAR, returns the root CID synchronously, and enqueues the CAR
 for IPFS pin + L2 anchor.
 
-Depends on `@etzhayyim/ipfs` (blob pin) and `@etzhayyim/pqh/crypto` (AEAD
-envelope for at-rest encryption) as sibling `kotoba-lang` packages instead
-of local relative imports.
+Depends on sibling `kotoba-lang` packages: `kotoba-lang/ipfs` (blob pin, via
+an injected `IHttp`), `kotoba-lang/pqh` (AEAD envelope for at-rest
+encryption), `kotoba-lang/mst` (MST layer/fanout math), and
+`kotoba-lang/multiformats` (CIDs/varints).
 
 ## Provenance
 
@@ -27,14 +28,10 @@ constants.
 
 The initial relocation was a **physical move only** (TypeScript unchanged,
 no dedicated tests existed in `etzhayyim-sdk` to bring along). A Clojure
-port has since landed (see below) and is the canonical implementation for
-new JVM/Clojure consumers going forward; the TypeScript implementation
-(`src/*.ts` + committed `dist/`) is unchanged and remains the
-npm-consumable artifact for existing Node-based deployments.
-
-**`dist/` is committed** (see `kotoba-lang/pqh`'s README for the rationale
-— git-dependency consumers in `allow-scripts`-gated environments never run
-the `prepare` build step).
+port then landed and is now the only implementation: the TypeScript
+(`src/*.ts` + committed `dist/`) was deleted per ADR-2607012200 (the
+`kotoba-lang` org's pure-Clojure admission rule). No in-tree consumer
+imported the npm package; the sidecar runs as a JVM daemon.
 
 ## Clojure port
 
@@ -156,24 +153,17 @@ same input.
 
 ## Development
 
-TypeScript:
-
 ```bash
-npm install
-npm run build
+clojure -M:lint      # clj-kondo (errors fail)
+clojure -M:test      # cognitect test-runner
+clojure -M:run       # run the sidecar (kotoba.lang.checkpointer.cli)
 ```
 
-Clojure:
-
-```bash
-clj-kondo --lint src test
-clojure -M:test
-```
-
-**`dist/` is committed** — git-dependency consumers in `allow-scripts`-gated
-environments never run the `prepare` build step. CI rebuilds and diffs
-`dist/` on every push; after any `src/*.ts` change, run `npm run build` and
-commit the updated `dist/` in the same commit.
+MST/CAR/msgpack cross-language vectors live under
+`test/kotoba/lang/checkpointer/*_vectors.edn`, generated via
+`scripts/gen-mst-vectors.mjs` against the real `@atproto/repo` /
+`@msgpack/msgpack` (install those ad hoc — the committed vectors are the
+source of truth; the script is provenance).
 
 ## License
 
