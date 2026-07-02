@@ -12,7 +12,11 @@
   process's job, not an abstractable I/O seam. What IS kept separately
   testable is everything AROUND the socket: `read-frame`/`write-frame!`
   (pure framing over a channel) and `handle-request` (fully pure-callable,
-  see kotoba.lang.checkpointer.dispatch)."
+  see kotoba.lang.checkpointer.dispatch).
+
+  `.clj`, genuinely JVM-only (not a compliance gap): `java.net`/
+  `java.nio.channels` Unix-domain-socket server + JVM daemon threads, no
+  cljs analog."
   (:require [clojure.java.io :as io]
             [kotoba.lang.checkpointer.dispatch :as dispatch]
             [kotoba.lang.checkpointer.msgpack :as msgpack]

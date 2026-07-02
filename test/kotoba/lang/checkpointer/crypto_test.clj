@@ -1,4 +1,8 @@
 (ns kotoba.lang.checkpointer.crypto-test
+  "`.clj`, deliberately (not a compliance gap): exercises
+  `kotoba.lang.checkpointer.crypto/encrypt-payload`/`decrypt-payload`, which
+  are `:clj`-only-wrapped (they call `kotoba.lang.pqh.crypto`, itself
+  JVM-only via Bouncy Castle -- see crypto.cljc's docstring)."
   (:require [clojure.test :refer [deftest is testing]]
             [kotoba.lang.checkpointer.crypto :as crypto]
             [kotoba.lang.pqh.crypto :as pqh]

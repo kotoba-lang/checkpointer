@@ -7,7 +7,11 @@
   kotoba.lang.checkpointer.commit/commit-mst computes directly for the same
   input (which is itself cross-checked against real @atproto/repo output in
   commit_test.clj) -- i.e. this test proves the socket/framing/dispatch
-  plumbing doesn't corrupt anything between the wire and the pure core."
+  plumbing doesn't corrupt anything between the wire and the pure core.
+
+  `.clj`, genuinely JVM-only (not a compliance gap): drives a real
+  `java.net.UnixDomainSocketAddress` server + client -- sidecar.clj itself
+  is `.clj`-only, see its namespace docstring."
   (:require [clojure.test :refer [deftest is testing]]
             [kotoba.lang.checkpointer.sidecar :as sidecar]
             [kotoba.lang.checkpointer.msgpack :as msgpack]

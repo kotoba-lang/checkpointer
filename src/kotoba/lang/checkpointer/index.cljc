@@ -10,11 +10,19 @@
   `index-key`/`latest-for`/`list-rows` are pure functions over a plain
   {index-key -> row} map -- independently testable with no filesystem
   involved. `load-index!`/`persist-index!` are the only I/O in this
-  namespace (mirrors #loadIndex/#persistIndex)."
-  (:require [clojure.data.json :as json]
-            [clojure.java.io :as io]
-            [kotoba.lang.checkpointer.fsutil :as fs])
-  (:import (java.io File)))
+  namespace (mirrors #loadIndex/#persistIndex).
+
+  Portability: `.cljc` -- `index-key`/`latest-for`/`list-rows` are plain
+  data-only Clojure and load under ClojureScript too. `load-index!`/
+  `persist-index!` are real JVM filesystem I/O (JSON file read/write via
+  `clojure.data.json` + `kotoba.lang.checkpointer.fsutil`'s atomic write)
+  and are therefore `:clj`-only below; they're called only from
+  `kotoba.lang.checkpointer.sidecar` (a JVM daemon) and from JVM test code,
+  never from the portable core."
+  #?(:clj (:require [clojure.data.json :as json]
+                     [clojure.java.io :as io]
+                     [kotoba.lang.checkpointer.fsutil :as fs]))
+  #?(:clj (:import (java.io File))))
 
 (defn index-key
   "row (or any map with these 4 string keys) -> a NUL-joined composite key,
@@ -59,8 +67,12 @@
        vec))
 
 ;; ---------------------------------------------------------------------------
-;; JSON persistence (I/O)
+;; JSON persistence (I/O) -- real JVM filesystem calls, :clj-only (see
+;; namespace docstring's Portability note).
 ;; ---------------------------------------------------------------------------
+
+#?(:clj
+(do
 
 (defn- index-file ^File [state-dir] (io/file (str state-dir) "index.json"))
 
@@ -76,3 +88,5 @@
 
 (defn persist-index! [state-dir index]
   (fs/atomic-write-str! (index-file state-dir) (json/write-str (vec (vals index)))))
+
+)) ;; end #?(:clj (do …))

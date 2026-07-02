@@ -2,7 +2,12 @@
   "The full #commitMst pipeline (dag-cbor + MST + CAR, end to end), cross-
   checked against REAL @atproto/repo output for exactly the same inputs --
   see scripts/gen-mst-vectors.mjs's `commitOne` helper, which is a literal
-  transcription of checkpointer.ts's `#commitMst`."
+  transcription of checkpointer.ts's `#commitMst`.
+
+  `.clj`, deliberately (not a compliance gap): `commit-mst` is itself
+  `.cljc`/portable, but transitively calls `:clj`-only-wrapped `dagcbor`/
+  `car`/`mst`, and this namespace uses the `.clj` test-vector loader
+  `vectors.clj`."
   (:require [clojure.test :refer [deftest is testing]]
             [kotoba.lang.checkpointer.commit :as commit]
             [kotoba.lang.checkpointer.vectors :as v]))

@@ -35,7 +35,7 @@ imported the npm package; the sidecar runs as a JVM daemon.
 
 ## Clojure port
 
-`src/kotoba/lang/checkpointer/*.clj` is a full port of the sidecar,
+`src/kotoba/lang/checkpointer/` is a full port of the sidecar,
 namespace-per-concern under `kotoba.lang.checkpointer.*`:
 `dagcbor` / `blockmap` / `mst` / `car` / `commit` (the MST+CAR pipeline) /
 `msgpack` / `crypto` / `keystore` / `index` / `spool` / `fsutil` / `pin` /
@@ -43,13 +43,34 @@ namespace-per-concern under `kotoba.lang.checkpointer.*`:
 server) / `cli` (env-var resolution + entrypoint, mirrors
 `checkpointer-bin.ts`).
 
-**JVM-only (`.clj`, not `.cljc`) scope decision.** This sidecar is a
-long-lived daemon process (a launchd/systemd/K8s-CronJob equivalent), not a
-browser artifact — matching `kotoba-lang/witness-quorum`/`pqh`/`base-l2`'s
-precedent, no CLJS branch was attempted. `kotoba.lang.pqh.crypto` (the AEAD
-dependency) is itself JVM-only for the same class of reason (Bouncy Castle,
-no Web Crypto XChaCha20-Poly1305 coverage) as documented in `pqh`'s own
-README.
+**`.cljc` pure core + `.clj` injected/host I/O (ADR-2607012200 layer
+test).** Per this org's admission rule (ADR-2606302300 §Step-1 / the
+`ipfs`-exemplar recipe in ADR-2607012200), the wire-protocol records, the
+msgpack codec, `indexKey`-style pure helpers, the MST/CAR/dag-cbor pipeline,
+and the AEAD wrap/unwrap ORCHESTRATION (`dagcbor` / `blockmap` / `mst` /
+`car` / `commit` / `msgpack` / `crypto` / the pure half of `index` /
+`dispatch`) are `.cljc`. Several of these (`dagcbor`/`car`/`msgpack`/
+`crypto`) are whole-file `#?(:clj (do ...))`-wrapped with throwing `:cljs`
+stubs rather than genuinely dual-target — `dagcbor`/`car` because they call
+`multiformats.core`'s CID/hash functions, which are THEMSELVES documented
+`:clj`-only there (content addressing runs build/server-side, not in the
+browser — the exact precedent this wrap pattern is borrowed from);
+`crypto` because it wraps `kotoba.lang.pqh.crypto`, itself JVM-only (Bouncy
+Castle, no Web Crypto XChaCha20-Poly1305 coverage, per `pqh`'s own README)
+and not yet ported to `.cljc` upstream; `msgpack` because a faithful cljs
+byte-level port (`js/DataView`/`BigInt` in place of `ByteBuffer`/
+`BigInteger`) needs its own cljs-side vector verification, deferred as a
+reasonable independent follow-up rather than attempted under this pass. See
+each namespace's own docstring for its specific rationale.
+
+Genuine host-specific I/O stays `.clj`: `spool`/`fsutil`/`keystore` (real
+`java.nio.file` calls), `pin` (JVM `future`-based fire-and-forget
+threading), `http-jdk` (a `java.net.http.HttpClient`-backed reference
+`IHttp` adapter), `sidecar` (the real Unix-domain-socket server — JDK
+`java.net.UnixDomainSocketAddress`/`ServerSocketChannel`), and `cli` (env-var
+resolution + JVM shutdown-hook process bootstrapping). None of these have a
+browser/cljs equivalent to be portable toward; see each namespace's
+docstring for the specific "why".
 
 **The MST/CAR determinism contract, and how it was verified.**
 `checkpointer.ts`'s `#commitMst` carries an explicit, load-bearing

@@ -48,7 +48,16 @@
   system accepts, a correctness regression. This looks like a bug in
   `kotoba-lang/mst` worth fixing upstream; flagged, not silently worked
   around. `valid-mst-key?`/`ensure-valid-mst-key!` below are this port's own
-  1024-cap-correct implementation."
+  1024-cap-correct implementation.
+
+  Portability: this namespace's OWN logic is plain, portable Clojure (the
+  only JVM-ism, `ascii-bytes`, is `#?`-conditionalized below); it is `.cljc`
+  so it loads under ClojureScript too. It still calls into
+  `kotoba.lang.checkpointer.dagcbor` (`get-pointer`/`serialize-node-data`),
+  which is itself content-addressing code kept `:clj`-only (see that
+  namespace's docstring) -- so this namespace compiles cleanly under cljs
+  but any call path that reaches `get-pointer` still throws there, same
+  contract as `multiformats.core`'s CID/byte machinery."
   (:require [clojure.string :as str]
             [mst.core :as mstcore]
             [kotoba.lang.checkpointer.dagcbor :as cbor]
@@ -121,7 +130,12 @@
 ;; Serialization + node CID
 ;; ---------------------------------------------------------------------------
 
-(defn- ascii-bytes ^bytes [^String s] (.getBytes s "US-ASCII"))
+(defn- ascii-bytes [s]
+  #?(:clj (.getBytes ^String s "US-ASCII")
+     ;; MST keys are already constrained to the AT-key charset
+     ;; (valid-chars-regex, below), which is ASCII -- a plain UTF-8 encode is
+     ;; therefore byte-identical to US-ASCII for every string this ever sees.
+     :cljs (.encode (js/TextEncoder.) s)))
 
 (declare get-pointer)
 

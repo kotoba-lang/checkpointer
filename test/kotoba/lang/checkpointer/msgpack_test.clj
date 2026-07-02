@@ -5,7 +5,12 @@
   the two implementations' 'smallest representation' choices coincide
   (which is most of the time); round-trip correctness (decode(encode(x)) ~=
   x, and OUR decode of THEIR bytes) is the actual correctness bar, since
-  msgpack here is a wire protocol, not a content-addressing scheme."
+  msgpack here is a wire protocol, not a content-addressing scheme.
+
+  `.clj`, deliberately (not a compliance gap): exercises
+  `kotoba.lang.checkpointer.msgpack/encode`/`decode`, which are `:clj`-only-
+  wrapped in that (now `.cljc`) namespace, plus JVM `Long/MAX_VALUE`/
+  `biginteger` literals and the `.clj` test-vector loader `vectors.clj`."
   (:require [clojure.test :refer [deftest is testing]]
             [kotoba.lang.checkpointer.msgpack :as mp]
             [kotoba.lang.checkpointer.vectors :as v]))

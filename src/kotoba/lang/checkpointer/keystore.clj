@@ -3,7 +3,10 @@
   <state-dir>/keys/<url-encoded cell_did>.key, lazy-generate-on-first-use,
   0700 dir / 0600 file, atomic write -- mirrors checkpointer.ts's
   #getOrCreateCellKey. I/O only; no crypto logic (that's
-  kotoba.lang.checkpointer.crypto, which is pure given key bytes)."
+  kotoba.lang.checkpointer.crypto, which is pure given key bytes).
+
+  `.clj`, genuinely JVM-only (not a compliance gap): real `java.nio.file`
+  key-file persistence, no cljs analog."
   (:require [kotoba.lang.checkpointer.fsutil :as fs]
             [kotoba.lang.pqh.crypto :as pqh]
             [clojure.java.io :as io])

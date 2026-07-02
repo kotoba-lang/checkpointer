@@ -1,4 +1,7 @@
 (ns kotoba.lang.checkpointer.pin-test
+  "`.clj`, genuinely JVM-only (not a compliance gap): exercises
+  `kotoba.lang.checkpointer.pin`'s `future`-based fire-and-forget threading
+  -- pin.clj itself is `.clj`-only, see its namespace docstring."
   (:require [clojure.test :refer [deftest is testing]]
             [kotoba.lang.checkpointer.pin :as pin]
             [kotoba.lang.ipfs :as ipfs]))

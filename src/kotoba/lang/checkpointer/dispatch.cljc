@@ -23,7 +23,15 @@
     :persist-index!        (fn [index-map])
     :get-cell-key!         (fn [cell-did] -> 32-byte key)
     :pin!                  (fn [car-bytes on-result])
-    :now-ms                (fn [] -> long)  -- injected for deterministic tests"
+    :now-ms                (fn [] -> long)  -- injected for deterministic tests
+
+  Portability: this is the pure op-dispatch core (no direct fs/socket/vendor
+  calls -- everything host-specific comes in via `env`), `.cljc` so it loads
+  under ClojureScript too. `index`/`msgpack` (required below) are likewise
+  portable; `crypto` is `:clj`-only-wrapped (see its namespace docstring,
+  it wraps `pqh`'s JVM-only AEAD) so `put!`/`get-tuple` on an `encrypt-cells`
+  cell would throw under cljs -- everything else in this namespace does not
+  touch `crypto` and is fully portable."
   (:require [kotoba.lang.checkpointer.commit :as commit]
             [kotoba.lang.checkpointer.msgpack :as msgpack]
             [kotoba.lang.checkpointer.index :as index]
@@ -39,7 +47,11 @@
 (defn err [message]
   {"ok" false "mst_root_cid" nil "data" nil "error" message})
 
-(defn- now-ms [env] ((get env :now-ms (fn [] (System/currentTimeMillis)))))
+(defn- default-now-ms []
+  #?(:clj (System/currentTimeMillis)
+     :cljs (.getTime (js/Date.))))
+
+(defn- now-ms [env] ((get env :now-ms default-now-ms)))
 
 (defn- put!
   [env req]
