@@ -4,7 +4,12 @@
   atomic via .tmp+rename -- mirrors checkpointer.ts's #spoolCar/#spoolPayload/
   #loadPayload exactly. Pure I/O (no dispatch/business logic); tests exercise
   this against a `java.nio.file.Files/createTempDirectory` temp dir, never a
-  fixed path."
+  fixed path.
+
+  `.clj`, genuinely JVM-only (not a compliance gap): real `java.nio.file`/
+  `java.io` filesystem calls, no cljs analog (a browser has no local
+  filesystem; a cljs host would need an entirely different injected
+  capability, not a reader-conditional variant of this same code)."
   (:require [kotoba.lang.checkpointer.fsutil :as fs]
             [clojure.java.io :as io])
   (:import (java.io File)

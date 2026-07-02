@@ -32,10 +32,32 @@
   envelope fields are plain strings/bytes/numbers/booleans/null/nested
   maps-arrays -- see checkpointer.ts's Request/Response/SaverIndexRow
   interfaces), and @msgpack/msgpack's default encode of those same JS value
-  shapes never produces one either."
-  (:import (java.io ByteArrayOutputStream ByteArrayInputStream)
-           (java.nio ByteBuffer)
-           (java.math BigInteger)))
+  shapes never produces one either.
+
+  Portability: `.cljc`, whole-file `#?(:clj (do ...))`-wrapped with throwing
+  `:cljs` stubs, matching the established `multiformats.core` /
+  `kotoba.lang.checkpointer.dagcbor` precedent in this ecosystem. Unlike
+  dagcbor, this codec has no upstream `:clj`-only dependency forcing the
+  wrap -- it's a self-contained wire-protocol codec that COULD be ported to
+  cljs (`js/DataView`/`Uint8Array` in place of `ByteBuffer`/
+  `ByteArrayOutputStream`, `js/BigInt` in place of `BigInteger` for the
+  uint64-beyond-Long case). It is wrapped anyway because: (a) every byte
+  read/write here (`write-be`/`write-be-big`/`read-uint64`/etc.) is exactly
+  the kind of JVM-array/BigInteger-representation-specific logic this port's
+  own task brief calls out as acceptable to defer; (b) a faithful port would
+  need independent cljs-side verification against the same
+  `mst_vectors.edn` `:msgpack_vectors` (generated from the REAL
+  `@msgpack/msgpack`) that JVM tests already check byte-for-byte, which is
+  out of scope for this compliance pass; (c) this sidecar's OWN deployment
+  model is JVM-only (see below) so there is no in-repo cljs caller today.
+  Porting the actual bit-twiddling to cljs is a reasonable, independently
+  reviewable follow-up, not attempted here."
+  #?(:clj (:import (java.io ByteArrayOutputStream ByteArrayInputStream)
+                   (java.nio ByteBuffer)
+                   (java.math BigInteger))))
+
+#?(:clj
+(do
 
 ;; ---------------------------------------------------------------------------
 ;; encode
@@ -209,3 +231,14 @@
 
 (defn decode [^bytes b]
   (decode-from (ByteArrayInputStream. b)))
+
+)) ;; end #?(:clj (do …))
+
+;; ── ClojureScript: same public API, throwing (see namespace docstring's
+;; Portability note -- deferred, not blocked by an upstream dependency) ────
+#?(:cljs
+(do
+  (defn- nope [n] (throw (ex-info (str "kotoba.lang.checkpointer.msgpack/" n " is :clj-only "
+                                       "(hand-rolled msgpack codec; cljs port deferred, see namespace docstring)") {})))
+  (defn encode [& _] (nope "encode"))
+  (defn decode [& _] (nope "decode"))))

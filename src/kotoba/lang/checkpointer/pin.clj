@@ -3,7 +3,13 @@
   checkpointer.ts's #pinSoon. `http` is an injected kotoba.lang.ipfs/IHttp
   (production wiring: kotoba.lang.checkpointer.http-jdk; tests inject a
   fake/mock -- the same IHttp seam kotoba-lang/ipfs already established, per
-  this port's 'pure core + injected I/O' convention)."
+  this port's 'pure core + injected I/O' convention).
+
+  `.clj`, genuinely JVM-only (not a compliance gap): `future` is JVM-thread-
+  pool concurrency with no direct cljs equivalent (cljs has no threads;
+  fire-and-forget there would be a Promise/core.async channel, a different
+  concurrency model, not a reader-conditional swap-in). `kotoba.lang.ipfs`
+  itself (the `IHttp`/`pin-blob` it calls) is already portable `.cljc`."
   (:require [kotoba.lang.ipfs :as ipfs]))
 
 (defn pin-soon!

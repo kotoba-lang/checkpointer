@@ -3,7 +3,11 @@
   server (JDK's built-in com.sun.net.httpserver.HttpServer -- no mocking of
   java.net.http itself), including parsing the actual multipart/form-data
   bytes -post-file produces, to confirm the hand-rolled multipart encoder
-  is genuinely well-formed, not just 'looks right'."
+  is genuinely well-formed, not just 'looks right'.
+
+  `.clj`, genuinely JVM-only (not a compliance gap): drives the JDK-only
+  `http-jdk` reference `IHttp` adapter against a real `com.sun.net.httpserver`
+  loopback server."
   (:require [clojure.test :refer [deftest is testing]]
             [kotoba.lang.checkpointer.http-jdk :as http-jdk]
             [kotoba.lang.ipfs :as ipfs])

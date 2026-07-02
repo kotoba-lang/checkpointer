@@ -1,7 +1,12 @@
 (ns kotoba.lang.checkpointer.dagcbor-test
   "Cross-checked against @atproto/lex-cbor's ACTUAL output (via this repo's
   own installed node_modules, see scripts/gen-mst-vectors.mjs) -- never
-  hand-typed expected bytes."
+  hand-typed expected bytes.
+
+  `.clj`, deliberately (not a compliance gap): exercises
+  `kotoba.lang.checkpointer.dagcbor/encode`/`decode`/`cid-for-value`, which
+  are `:clj`-only-wrapped in that (now `.cljc`) namespace, plus the `.clj`
+  test-vector loader `vectors.clj` -- see both namespaces' docstrings."
   (:require [clojure.test :refer [deftest is testing]]
             [kotoba.lang.checkpointer.dagcbor :as cbor]
             [kotoba.lang.checkpointer.vectors :as v]))

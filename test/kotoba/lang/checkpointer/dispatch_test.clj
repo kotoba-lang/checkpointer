@@ -5,7 +5,13 @@
   port's testing discipline: avoid real fs only where reasonably
   avoidable, but DO use a temp dir rather than mocking it away entirely for
   the parts that inherently need it); `:pin!` and `:now-ms` are simple fakes
-  since pinning is fire-and-forget/network and time is nondeterministic."
+  since pinning is fire-and-forget/network and time is nondeterministic.
+
+  `.clj`, deliberately (not a compliance gap): `dispatch/handle-request`
+  itself is `.cljc`/portable (pure op-dispatch over an injected `env`), but
+  this test wires REAL `spool`/`index`/`keystore` collaborators (genuinely
+  `.clj`-only filesystem I/O, see their namespace docstrings) as that `env`
+  for an integration-style exercise, so the test as a whole is JVM-only."
   (:require [clojure.test :refer [deftest is testing]]
             [kotoba.lang.checkpointer.dispatch :as dispatch]
             [kotoba.lang.checkpointer.spool :as spool]

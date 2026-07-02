@@ -6,7 +6,11 @@
   single \"file\" field), since `java.net.http` has no built-in multipart
   support and `kotoba.lang.ipfs` ships no JVM reference adapter of its own
   yet (only a test mock) -- this is that adapter, usable directly by any JVM
-  host, not just this sidecar."
+  host, not just this sidecar.
+
+  `.clj`, genuinely JVM-only (not a compliance gap): `java.net.http`
+  reference adapter for the `.cljc` `kotoba.lang.ipfs/IHttp` seam; a cljs
+  host supplies its own `IHttp` (e.g. `fetch`), not this namespace."
   (:require [kotoba.lang.ipfs :as ipfs])
   (:import (java.io ByteArrayOutputStream)
            (java.net URI)

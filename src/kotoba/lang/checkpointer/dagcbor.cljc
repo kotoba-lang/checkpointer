@@ -31,14 +31,32 @@
   Every byte-level claim above is cross-checked against @atproto/lex-cbor's
   ACTUAL output in test/kotoba/lang/checkpointer/mst_vectors.edn (generated
   by scripts/gen-mst-vectors.mjs from this repo's own installed
-  @atproto/repo + @atproto/lex-cbor -- never hand-typed)."
-  (:require [multiformats.core :as mf])
-  (:import (java.io ByteArrayOutputStream ByteArrayInputStream)
-           (java.util Arrays)))
+  @atproto/repo + @atproto/lex-cbor -- never hand-typed).
+
+  Portability: `.cljc`. `CidLink`/`cid-link`/`cid-link?` (the marker record)
+  are plain, portable Clojure with no JVM-isms and load/run under
+  ClojureScript unconditionally. `encode`/`decode`/`cid-for-value` (and their
+  private helpers) are mutable-`ByteArrayOutputStream`/`ByteArrayInputStream`
+  byte-twiddling code, AND `encode-cid-link`/`cid-string-of-raw`/
+  `cid-for-value` call into `multiformats.core`'s CID/hash functions, which
+  are THEMSELVES documented `:clj`-only there ('content addressing runs
+  build/server-side, not in the browser') -- so a genuine cljs port of this
+  namespace's codec is blocked on that upstream decision regardless of how
+  this namespace's own bytes are pushed around. Per that same established
+  `multiformats.core` precedent, the codec is therefore wrapped whole in
+  `#?(:clj (do ...))` with throwing `:cljs` stubs: this namespace still
+  compiles cleanly under ClojureScript (any `.cljc` consumer, e.g.
+  `kotoba.lang.checkpointer.mst`, loads fine), it just fails loudly if
+  `encode`/`decode`/`cid-for-value` are actually invoked there."
+  #?(:clj (:require [multiformats.core :as mf]))
+  #?(:clj (:import (java.io ByteArrayOutputStream ByteArrayInputStream)
+                   (java.util Arrays))))
 
 ;; ---------------------------------------------------------------------------
 ;; CID link wrapper -- an explicit, unambiguous marker (unlike @atproto's
 ;; structural `ifCid` duck-typing) since we build every value ourselves.
+;; Portable: no JVM-isms, used by callers (e.g. kotoba.lang.checkpointer.mst)
+;; regardless of platform.
 ;; ---------------------------------------------------------------------------
 
 (defrecord CidLink [cid])
@@ -50,6 +68,13 @@
   (->CidLink cid-str))
 
 (defn cid-link? [x] (instance? CidLink x))
+
+;; ---------------------------------------------------------------------------
+;; encode / decode / cid-for-value -- :clj-only (see namespace docstring).
+;; ---------------------------------------------------------------------------
+
+#?(:clj
+(do
 
 ;; ---------------------------------------------------------------------------
 ;; encode
@@ -185,3 +210,17 @@
   @atproto/lex-data's `cidForCbor(encode(x))`)."
   ^String [x]
   (mf/cidv1-dag-cbor (encode x)))
+
+)) ;; end #?(:clj (do …))
+
+;; ── ClojureScript: same public API, throwing (byte-level dag-cbor codec is
+;; :clj-only here, same contract as multiformats.core's CID machinery -- see
+;; namespace docstring) ────────────────────────────────────────────────────
+#?(:cljs
+(do
+  (defn- nope [n] (throw (ex-info (str "kotoba.lang.checkpointer.dagcbor/" n " is :clj-only "
+                                       "(byte-level dag-cbor codec, blocked on multiformats.core's "
+                                       "CID/hash functions also being :clj-only)") {})))
+  (defn encode [& _] (nope "encode"))
+  (defn decode [& _] (nope "decode"))
+  (defn cid-for-value [& _] (nope "cid-for-value"))))

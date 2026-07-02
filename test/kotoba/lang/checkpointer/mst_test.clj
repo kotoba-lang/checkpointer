@@ -6,7 +6,13 @@
   full commit-mst pipeline, see commit_test.clj), and a deliberately
   multi-layer tree (mst_multi_entry_split, root_layer=2) exercising
   createChild/createParent/splitAround -- not just the trivial single-leaf
-  case."
+  case.
+
+  `.clj`, deliberately (not a compliance gap): `kotoba.lang.checkpointer.mst`
+  is itself `.cljc`/portable, but `get-pointer`/`get-unstored-blocks` (used
+  throughout below) call into `:clj`-only-wrapped `dagcbor`/`car`, and this
+  namespace uses the `.clj` test-vector loader `vectors.clj` -- see those
+  namespaces' docstrings."
   (:require [clojure.test :refer [deftest is testing]]
             [kotoba.lang.checkpointer.mst :as mst]
             [kotoba.lang.checkpointer.blockmap :as bm]

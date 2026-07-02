@@ -4,7 +4,17 @@
   data, @msgpack/msgpack) -- see mst_vectors.edn (checked in alongside this
   namespace) and scripts/gen-mst-vectors.mjs for the generator these vectors
   came from. Regenerate with:
-    node scripts/gen-mst-vectors.mjs > test/kotoba/lang/checkpointer/mst_vectors.edn"
+    node scripts/gen-mst-vectors.mjs > test/kotoba/lang/checkpointer/mst_vectors.edn
+
+  `.clj`, deliberately (not a compliance gap): loads via JVM classpath
+  `io/resource` + `slurp`, and feeds ONLY dagcbor/msgpack/mst/commit tests,
+  which exercise the `:clj`-only-wrapped codecs those namespaces became
+  `.cljc` with a throwing `:cljs` stub for (see their namespace docstrings)
+  -- there is no cljs test target configured in deps.edn (`:test` is
+  cognitect test-runner, JVM-only), so a portable vectors loader would have
+  no consumer. Matches `kotoba-lang/ipfs`'s `ipfs_test.clj` precedent: tests
+  can stay `.clj` alongside a portable `.cljc` source when there is no
+  actual second platform exercising them."
   (:require [clojure.edn :as edn]
             [clojure.java.io :as io]
             [clojure.string :as str]))

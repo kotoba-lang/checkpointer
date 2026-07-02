@@ -1,6 +1,16 @@
 (ns kotoba.lang.checkpointer.cli
   "CLI entrypoint -- env var resolution + JVM shutdown-hook signal handling,
-  mirroring checkpointer-bin.ts + checkpointer.ts's `runFromEnv`."
+  mirroring checkpointer-bin.ts + checkpointer.ts's `runFromEnv`.
+
+  `.clj`, genuinely JVM-only (not a compliance gap): `cfg-from-env`/`-main`
+  are `System/getenv`/`Runtime/getRuntime`/JVM-shutdown-hook/blocking-main-
+  thread process bootstrapping -- a process entrypoint, not portable core
+  logic. `resolve-did-list` (the one piece with a real claim to being a
+  'pure indexKey/resolveDidList-style helper', per this port's design doc)
+  is NOT fully pure either: its `@/abs/path` branch does a real `slurp` file
+  read, so it isn't split out into a separate `.cljc` namespace here -- doing
+  so would need its own injected file-read capability, a module-boundary
+  change beyond this compliance pass's rename+reader-conditional scope."
   (:require [clojure.string :as str]
             [kotoba.lang.checkpointer.sidecar :as sidecar]))
 

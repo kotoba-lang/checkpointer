@@ -2,7 +2,10 @@
   "Shared atomic-write-via-tmp-then-rename helper -- factors out the
   `writeFile(path.tmp) + rename(path.tmp, path)` pattern repeated four times
   in checkpointer.ts (#spoolCar, #spoolPayload, #persistIndex,
-  #getOrCreateCellKey)."
+  #getOrCreateCellKey).
+
+  `.clj`, genuinely JVM-only (not a compliance gap): real `java.nio.file`
+  atomic-move + POSIX-permission calls, no cljs analog."
   (:require [clojure.java.io :as io])
   (:import (java.io File)
            (java.nio.file Files StandardCopyOption)

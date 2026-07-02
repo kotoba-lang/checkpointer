@@ -1,4 +1,8 @@
 (ns kotoba.lang.checkpointer.keystore-test
+  "`.clj`, genuinely JVM-only (not a compliance gap): exercises
+  `kotoba.lang.checkpointer.keystore`'s real filesystem key persistence
+  against a real temp dir -- keystore.clj itself is `.clj`-only I/O, see
+  its namespace docstring."
   (:require [clojure.test :refer [deftest is testing]]
             [clojure.java.io :as io]
             [kotoba.lang.checkpointer.keystore :as keystore])
