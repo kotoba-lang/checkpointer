@@ -3,7 +3,7 @@
         io.github.kotoba-lang/mst {:git/sha "ab049be52444f5b89ee87f14594fac8abb660002"}
         io.github.kotoba-lang/io-multiformats {:git/sha "35b608c9b21024f01daedbd399092a3b84d2ed0a"}
         io.github.kotoba-lang/pqh {:git/sha "454a108536334e7a973b65f7a3b072a95d7c9602"}
-        io.github.kotoba-lang/ipfs {:git/sha "1e26843885a587842015e0609d4f689ee37786a6"}}
+        io.github.kotoba-lang/io-ipfs {:git/sha "1e26843885a587842015e0609d4f689ee37786a6"}}
  :aliases
  {:test {:extra-paths ["test"]
          :extra-deps {io.github.cognitect-labs/test-runner
