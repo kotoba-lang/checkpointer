@@ -51,6 +51,17 @@
           decoded (cbor/decode (cbor/encode {"blob" (cbor/cid-link cid)}))]
       (is (= cid (:cid (get decoded "blob")))))))
 
+(deftest truncated-string-throws-instead-of-zero-padding
+  (testing "a byte-string/text-string header claiming more bytes than
+            remain in the stream must raise, not silently decode into a
+            zero-padded, shorter-than-claimed result"
+    (let [full (cbor/encode "hello world this is a longer string")
+          truncated (byte-array (take 5 (seq full)))]
+      (is (thrown? Exception (cbor/decode truncated))))
+    (let [full (cbor/encode (byte-array (range 42)))
+          truncated (byte-array (take 4 (seq full)))]
+      (is (thrown? Exception (cbor/decode truncated))))))
+
 (deftest negative-integers-test
   (testing "negative ints encode/decode correctly"
     (is (= -1 (cbor/decode (cbor/encode -1))))
