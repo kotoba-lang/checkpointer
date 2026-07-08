@@ -165,7 +165,16 @@
 (declare decode-from)
 
 (defn- read-bytes ^bytes [^ByteArrayInputStream in n]
-  (let [b (byte-array n)] (.read in b 0 n) b))
+  ;; InputStream.read(byte[],off,len) can return fewer bytes than asked
+  ;; without throwing -- discarding that return value (as this used to)
+  ;; let a byte-string/text-string header claiming more bytes than remain
+  ;; in the stream silently decode into the zero-initialized buffer's real
+  ;; prefix plus NUL padding, with no error. Same fix already applied to
+  ;; msgpack.cljc's own read-bytes in this file.
+  (let [b (byte-array n)
+        got (.read in b 0 n)]
+    (when (and (pos? n) (< got n)) (throw (ex-info "dagcbor: unexpected end of input" {})))
+    b))
 
 (defn- cid-string-of-raw ^String [^bytes raw] (str "b" (mf/base32 raw)))
 
