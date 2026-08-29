@@ -15,11 +15,11 @@
   Portability: `.cljc` -- `index-key`/`latest-for`/`list-rows` are plain
   data-only Clojure and load under ClojureScript too. `load-index!`/
   `persist-index!` are real JVM filesystem I/O (JSON file read/write via
-  `clojure.data.json` + `kotoba.lang.checkpointer.fsutil`'s atomic write)
+  `json.data-json` + `kotoba.lang.checkpointer.fsutil`'s atomic write)
   and are therefore `:clj`-only below; they're called only from
   `kotoba.lang.checkpointer.sidecar` (a JVM daemon) and from JVM test code,
   never from the portable core."
-  #?(:clj (:require [clojure.data.json :as json]
+  #?(:clj (:require [json.data-json :as json]
                      [clojure.java.io :as io]
                      [kotoba.lang.checkpointer.fsutil :as fs]))
   #?(:clj (:import (java.io File))))
