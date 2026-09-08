@@ -17,7 +17,7 @@
   actual second platform exercising them."
   (:require [clojure.edn :as edn]
             [clojure.java.io :as io]
-            [clojure.string :as str]))
+            [kotoba.lang.text :as str]))
 
 (def vectors
   (edn/read-string (slurp (io/resource "kotoba/lang/checkpointer/mst_vectors.edn"))))
