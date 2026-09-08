@@ -58,7 +58,7 @@
   namespace's docstring) -- so this namespace compiles cleanly under cljs
   but any call path that reaches `get-pointer` still throws there, same
   contract as `multiformats.core`'s CID/byte machinery."
-  (:require [clojure.string :as str]
+  (:require [kotoba.lang.text :as str]
             [mst.core :as mstcore]
             [kotoba.lang.checkpointer.dagcbor :as cbor]
             [kotoba.lang.checkpointer.blockmap :as bm]))
