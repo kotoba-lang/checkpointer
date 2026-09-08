@@ -11,7 +11,7 @@
   read, so it isn't split out into a separate `.cljc` namespace here -- doing
   so would need its own injected file-read capability, a module-boundary
   change beyond this compliance pass's rename+reader-conditional scope."
-  (:require [clojure.string :as str]
+  (:require [kotoba.lang.text :as str]
             [kotoba.lang.checkpointer.sidecar :as sidecar]))
 
 (defn resolve-did-list
