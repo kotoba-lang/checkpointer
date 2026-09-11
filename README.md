@@ -175,9 +175,9 @@ same input.
 ## Development
 
 ```bash
-clojure -M:lint      # clj-kondo (errors fail)
-clojure -M:test      # cognitect test-runner
-clojure -M:run       # run the sidecar (kotoba.lang.checkpointer.cli)
+kbb -M:lint      # clj-kondo (errors fail)
+kbb -M:test      # cognitect test-runner
+kbb -M:run       # run the sidecar (kotoba.lang.checkpointer.cli)
 ```
 
 MST/CAR/msgpack cross-language vectors live under

@@ -183,7 +183,7 @@
   (let [b (read-bytes in 8)]
     (if (neg? (aget b 0))
       (BigInteger. 1 ^bytes b)
-      (.getLong (bb b)))))
+      (.getLong (kbb -M:b)))))
 
 (defn- read-int64 ^long [in] (.getLong (bb (read-bytes in 8))))
 (defn- read-float32 ^double [in] (double (.getFloat (bb (read-bytes in 4)))))
