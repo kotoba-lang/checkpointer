@@ -12,16 +12,15 @@
   `.clj`, genuinely JVM-only (not a compliance gap): drives a real
   `java.net.UnixDomainSocketAddress` server + client -- sidecar.clj itself
   is `.clj`-only, see its namespace docstring."
-  (:require [kotoba.test :refer [deftest is testing]]
+  (:require [kotoba.io :as kio] [kotoba.test :refer [deftest is testing]]
             [kotoba.lang.checkpointer.sidecar :as sidecar]
             [kotoba.lang.checkpointer.msgpack :as msgpack]
             [kotoba.lang.checkpointer.commit :as commit])
   (:import (java.net UnixDomainSocketAddress)
-           (java.nio.channels SocketChannel)
-           (java.nio.file Files)))
+           (java.nio.channels SocketChannel)))
 
 (defn- temp-dir []
-  (str (Files/createTempDirectory "checkpointer-sidecar-test" (make-array java.nio.file.attribute.FileAttribute 0))))
+  (str (kio/temp-dir "checkpointer-sidecar-test")))
 
 (defn- short-socket-path
   "A Unix-domain-socket path is bound by `sun_path` (~104 bytes on macOS,

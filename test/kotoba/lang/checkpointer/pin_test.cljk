@@ -2,7 +2,7 @@
   "`.clj`, genuinely JVM-only (not a compliance gap): exercises
   `kotoba.lang.checkpointer.pin`'s `future`-based fire-and-forget threading
   -- pin.clj itself is `.clj`-only, see its namespace docstring."
-  (:require [kotoba.test :refer [deftest is testing]]
+  (:require [kotoba.bytes :as kbytes] [kotoba.test :refer [deftest is testing]]
             [kotoba.lang.checkpointer.pin :as pin]
             [kotoba.lang.ipfs :as ipfs]))
 
@@ -13,7 +13,7 @@
     (-post-file [_ _url _content]
       (if (instance? Throwable result-or-ex)
         (throw result-or-ex)
-        {:status 200 :body (.getBytes (str "{\"Hash\":\"" (:cid result-or-ex) "\",\"Size\":\"" (:size result-or-ex) "\"}") "UTF-8")}))))
+        {:status 200 :body (kbytes/utf8-bytes (str "{\"Hash\":\"" (:cid result-or-ex) "\",\"Size\":\"" (:size result-or-ex) "\"}"))}))))
 
 (deftest pin-soon-success-test
   (testing "on-result is called with the parsed {:cid :size} on success"
