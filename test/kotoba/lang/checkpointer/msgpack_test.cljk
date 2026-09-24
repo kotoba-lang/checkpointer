@@ -11,7 +11,7 @@
   `kotoba.lang.checkpointer.msgpack/encode`/`decode`, which are `:clj`-only-
   wrapped in that (now `.cljc`) namespace, plus JVM `Long/MAX_VALUE`/
   `biginteger` literals and the `.clj` test-vector loader `vectors.clj`."
-  (:require [clojure.test :refer [deftest is testing]]
+  (:require [kotoba.test :refer [deftest is testing]]
             [kotoba.lang.checkpointer.msgpack :as mp]
             [kotoba.lang.checkpointer.vectors :as v]))
 

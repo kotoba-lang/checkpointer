@@ -13,7 +13,7 @@
   throughout below) call into `:clj`-only-wrapped `dagcbor`/`car`, and this
   namespace uses the `.clj` test-vector loader `vectors.clj` -- see those
   namespaces' docstrings."
-  (:require [clojure.test :refer [deftest is testing]]
+  (:require [kotoba.test :refer [deftest is testing]]
             [kotoba.lang.checkpointer.mst :as mst]
             [kotoba.lang.checkpointer.blockmap :as bm]
             [kotoba.lang.checkpointer.car :as car]
