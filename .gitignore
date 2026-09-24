@@ -5,3 +5,4 @@ node_modules/
 .clj-kondo/
 .lsp/
 *.class
+.nbb/

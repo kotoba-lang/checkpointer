@@ -8,7 +8,7 @@
   `.clj`, genuinely JVM-only (not a compliance gap): drives the JDK-only
   `http-jdk` reference `IHttp` adapter against a real `com.sun.net.httpserver`
   loopback server."
-  (:require [clojure.test :refer [deftest is testing]]
+  (:require [kotoba.test :refer [deftest is testing]]
             [kotoba.lang.checkpointer.http-jdk :as http-jdk]
             [kotoba.lang.ipfs :as ipfs])
   (:import (com.sun.net.httpserver HttpServer HttpExchange HttpHandler)

@@ -12,7 +12,7 @@
   this test wires REAL `spool`/`index`/`keystore` collaborators (genuinely
   `.clj`-only filesystem I/O, see their namespace docstrings) as that `env`
   for an integration-style exercise, so the test as a whole is JVM-only."
-  (:require [clojure.test :refer [deftest is testing]]
+  (:require [kotoba.test :refer [deftest is testing]]
             [kotoba.lang.checkpointer.dispatch :as dispatch]
             [kotoba.lang.checkpointer.spool :as spool]
             [kotoba.lang.checkpointer.index :as index]

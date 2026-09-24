@@ -12,7 +12,7 @@
   `.clj`, genuinely JVM-only (not a compliance gap): drives a real
   `java.net.UnixDomainSocketAddress` server + client -- sidecar.clj itself
   is `.clj`-only, see its namespace docstring."
-  (:require [clojure.test :refer [deftest is testing]]
+  (:require [kotoba.test :refer [deftest is testing]]
             [kotoba.lang.checkpointer.sidecar :as sidecar]
             [kotoba.lang.checkpointer.msgpack :as msgpack]
             [kotoba.lang.checkpointer.commit :as commit])

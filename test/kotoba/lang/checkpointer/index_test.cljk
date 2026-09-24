@@ -2,7 +2,7 @@
   "`index-key`/`latest-for`/`list-rows` are portable, tested identically on
   both platforms. `load-persist-round-trip-test` exercises the `:clj`-only
   JSON-file I/O (`load-index!`/`persist-index!`) and is gated accordingly."
-  (:require [clojure.test :refer [deftest is testing]]
+  (:require [kotoba.test :refer [deftest is testing]]
             [kotoba.lang.checkpointer.index :as index])
   #?(:clj (:import (java.nio.file Files))))
 
