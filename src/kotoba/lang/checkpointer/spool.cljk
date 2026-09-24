@@ -10,13 +10,11 @@
   `java.io` filesystem calls, no cljs analog (a browser has no local
   filesystem; a cljs host would need an entirely different injected
   capability, not a reader-conditional variant of this same code)."
-  (:require [kotoba.lang.checkpointer.fsutil :as fs]
+  (:require [kotoba.http.form-urlencoded :as form-urlencoded] [kotoba.io :as kio] [kotoba.lang.checkpointer.fsutil :as fs]
             [clojure.java.io :as io])
-  (:import (java.io File)
-           (java.net URLEncoder)
-           (java.nio.file Files)))
+  (:import (java.io File)))
 
-(defn- url-encode ^String [^String s] (URLEncoder/encode s "UTF-8"))
+(defn- url-encode ^String [^String s] (form-urlencoded/form-encode s))
 
 (defn cell-queue-dir ^File [state-dir cell-did]
   (io/file (str state-dir) "queue" (url-encode cell-did)))
@@ -31,4 +29,4 @@
 
 (defn load-payload
   ^bytes [state-dir cell-did checkpoint-id]
-  (Files/readAllBytes (.toPath (io/file (cell-queue-dir state-dir cell-did) (str checkpoint-id ".payload")))))
+  (kio/read-all-bytes (io/file (cell-queue-dir state-dir cell-did) (str checkpoint-id ".payload"))))

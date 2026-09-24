@@ -12,17 +12,16 @@
   this test wires REAL `spool`/`index`/`keystore` collaborators (genuinely
   `.clj`-only filesystem I/O, see their namespace docstrings) as that `env`
   for an integration-style exercise, so the test as a whole is JVM-only."
-  (:require [kotoba.test :refer [deftest is testing]]
+  (:require [kotoba.io :as kio] [kotoba.test :refer [deftest is testing]]
             [kotoba.lang.checkpointer.dispatch :as dispatch]
             [kotoba.lang.checkpointer.spool :as spool]
             [kotoba.lang.checkpointer.index :as index]
             [kotoba.lang.checkpointer.keystore :as keystore]
             [kotoba.lang.checkpointer.msgpack :as msgpack]
-            [kotoba.lang.checkpointer.commit :as commit])
-  (:import (java.nio.file Files)))
+            [kotoba.lang.checkpointer.commit :as commit]))
 
 (defn- temp-dir []
-  (str (Files/createTempDirectory "checkpointer-dispatch-test" (make-array java.nio.file.attribute.FileAttribute 0))))
+  (str (kio/temp-dir "checkpointer-dispatch-test")))
 
 (defn- test-env
   [& {:keys [allowed-dids encrypt-cells now]

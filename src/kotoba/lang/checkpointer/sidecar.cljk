@@ -17,7 +17,7 @@
   `.clj`, genuinely JVM-only (not a compliance gap): `java.net`/
   `java.nio.channels` Unix-domain-socket server + JVM daemon threads, no
   cljs analog."
-  (:require [clojure.java.io :as io]
+  (:require [kotoba.io :as io]
             [kotoba.lang.checkpointer.dispatch :as dispatch]
             [kotoba.lang.checkpointer.msgpack :as msgpack]
             [kotoba.lang.checkpointer.index :as index]
@@ -116,7 +116,7 @@
 
 (defn- delete-stale-socket! [socket-path]
   (let [f (io/file (str socket-path))]
-    (when (.exists f) (.delete f))))
+    (when (io/exists? f) (io/delete f))))
 
 (defn start!
   "Binds the Unix socket, loads the on-disk index, and starts a daemon
@@ -126,8 +126,8 @@
   (let [socket-path (:socket-path cfg)
         state-dir (:state-dir cfg)]
     (io/make-parents (io/file (str socket-path) "placeholder"))
-    (.mkdirs (io/file (str state-dir)))
-    (.mkdirs (io/file (str state-dir) "queue"))
+    (io/mkdirs (io/file (str state-dir)))
+    (io/mkdirs (io/file (str state-dir) "queue"))
     (delete-stale-socket! socket-path)
     (let [index-atom (atom (index/load-index! state-dir))
           env (make-env cfg index-atom)

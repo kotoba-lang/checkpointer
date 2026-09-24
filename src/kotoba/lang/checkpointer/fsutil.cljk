@@ -6,7 +6,7 @@
 
   `.clj`, genuinely JVM-only (not a compliance gap): real `java.nio.file`
   atomic-move + POSIX-permission calls, no cljs analog."
-  (:require [clojure.java.io :as io])
+  (:require [kotoba.bytes :as kbytes] [clojure.java.io :as io])
   (:import (java.io File)
            (java.nio.file Files StandardCopyOption)
            (java.nio.file.attribute PosixFilePermissions)))
@@ -34,4 +34,4 @@
      (Files/move (.toPath tmp) (.toPath f) (into-array StandardCopyOption [StandardCopyOption/ATOMIC_MOVE])))))
 
 (defn atomic-write-str! [^File f ^String s]
-  (atomic-write-bytes! f (.getBytes s "UTF-8")))
+  (atomic-write-bytes! f (kbytes/utf8-bytes s)))

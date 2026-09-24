@@ -11,23 +11,22 @@
   `.clj`, genuinely JVM-only (not a compliance gap): `java.net.http`
   reference adapter for the `.cljc` `kotoba.lang.ipfs/IHttp` seam; a cljs
   host supplies its own `IHttp` (e.g. `fetch`), not this namespace."
-  (:require [kotoba.lang.ipfs :as ipfs])
+  (:require [kotoba.bytes :as kbytes] [kotoba.lang.ipfs :as ipfs])
   (:import (java.io ByteArrayOutputStream)
            (java.net URI)
            (java.net.http HttpClient HttpRequest HttpRequest$BodyPublishers HttpResponse$BodyHandlers)
-           (java.nio.charset StandardCharsets)
            (java.time Duration)
            (java.util UUID)))
 
 (defn- content->bytes ^bytes [content]
   (cond
     (bytes? content) content
-    (string? content) (.getBytes ^String content StandardCharsets/UTF_8)
+    (string? content) (kbytes/utf8-bytes ^String content)
     :else (throw (ex-info "http-jdk: unsupported multipart content type" {:type (type content)}))))
 
 (defn- multipart-body ^bytes [^String boundary ^bytes content]
   (let [o (ByteArrayOutputStream.)
-        w (fn [^String s] (.write o (.getBytes s StandardCharsets/UTF_8)))]
+        w (fn [^String s] (.write o (kbytes/utf8-bytes s)))]
     (w (str "--" boundary "\r\n"))
     (w "Content-Disposition: form-data; name=\"file\"; filename=\"blob\"\r\n")
     (w "Content-Type: application/octet-stream\r\n\r\n")
