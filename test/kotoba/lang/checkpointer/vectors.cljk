@@ -15,7 +15,7 @@
   no consumer. Matches `kotoba-lang/ipfs`'s `ipfs_test.clj` precedent: tests
   can stay `.clj` alongside a portable `.cljc` source when there is no
   actual second platform exercising them."
-  (:require [clojure.edn :as edn]
+  (:require [kotoba.lang.edn :as edn]
             [clojure.java.io :as io]
             [kotoba.lang.text :as str]))
 
