@@ -2,9 +2,8 @@
   "`index-key`/`latest-for`/`list-rows` are portable, tested identically on
   both platforms. `load-persist-round-trip-test` exercises the `:clj`-only
   JSON-file I/O (`load-index!`/`persist-index!`) and is gated accordingly."
-  (:require [kotoba.test :refer [deftest is testing]]
-            [kotoba.lang.checkpointer.index :as index])
-  #?(:clj (:import (java.nio.file Files))))
+  (:require [kotoba.io :as kio] [kotoba.test :refer [deftest is testing]]
+            [kotoba.lang.checkpointer.index :as index]))
 
 (defn- row [cell-did thread-id ns- checkpoint-id projected-at]
   {"cell_did" cell-did "thread_id" thread-id "checkpoint_ns" ns-
@@ -38,7 +37,7 @@
 
 #?(:clj
 (deftest load-persist-round-trip-test
-  (let [dir (str (Files/createTempDirectory "checkpointer-index-test" (make-array java.nio.file.attribute.FileAttribute 0)))
+  (let [dir (str (kio/temp-dir "checkpointer-index-test"))
         rows [(row "c1" "t1" "" "a" 100)]
         idx (into {} (map (fn [r] [(index/index-key r) r])) rows)]
     (testing "no index.json yet -> {}"

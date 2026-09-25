@@ -16,7 +16,7 @@
   can stay `.clj` alongside a portable `.cljc` source when there is no
   actual second platform exercising them."
   (:require [kotoba.lang.edn :as edn]
-            [clojure.java.io :as io]
+            [kotoba.io :as io]
             [kotoba.lang.text :as str]))
 
 (def vectors

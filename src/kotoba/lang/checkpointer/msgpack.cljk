@@ -54,7 +54,8 @@
   reviewable follow-up, not attempted here."
   #?(:clj (:import (java.io ByteArrayOutputStream ByteArrayInputStream)
                    (java.nio ByteBuffer)
-                   (java.math BigInteger))))
+                   (java.math BigInteger)))
+  (:require [kotoba.bytes :as kbytes]))
 
 #?(:clj
 (do
@@ -109,7 +110,7 @@
   (write-be o (Double/doubleToLongBits d) 8))
 
 (defn- encode-str [^ByteArrayOutputStream o ^String s]
-  (let [b (.getBytes s "UTF-8") n (alength b)]
+  (let [b (kbytes/utf8-bytes s) n (alength b)]
     (cond
       (<= n 31) (write-u8 o (bit-or 0xa0 n))
       (<= n 0xff) (do (write-u8 o 0xd9) (write-be o n 1))
@@ -189,7 +190,7 @@
 (defn- read-float32 ^double [in] (double (.getFloat (bb (read-bytes in 4)))))
 (defn- read-float64 ^double [in] (.getDouble (bb (read-bytes in 8))))
 
-(defn- read-str ^String [in n] (String. (read-bytes in n) "UTF-8"))
+(defn- read-str ^String [in n] (kbytes/utf8-string (read-bytes in n)))
 
 (declare decode-from)
 

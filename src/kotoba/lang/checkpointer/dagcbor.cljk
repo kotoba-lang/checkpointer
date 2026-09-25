@@ -50,7 +50,8 @@
   `encode`/`decode`/`cid-for-value` are actually invoked there."
   #?(:clj (:require [multiformats.core :as mf]))
   #?(:clj (:import (java.io ByteArrayOutputStream ByteArrayInputStream)
-                   (java.util Arrays))))
+                   (java.util Arrays)))
+  (:require [kotoba.bytes :as kbytes]))
 
 ;; ---------------------------------------------------------------------------
 ;; CID link wrapper -- an explicit, unambiguous marker (unlike @atproto's
@@ -95,7 +96,7 @@
                   (.write o (int (bit-and (unsigned-bit-shift-right (long n) s) 0xff))))))))
 
 (defn- key-bytes ^bytes [k]
-  (.getBytes ^String (cond (string? k) k (keyword? k) (name k) :else (str k)) "UTF-8"))
+  (kbytes/utf8-bytes ^String (cond (string? k) k (keyword? k) (name k) :else (str k))))
 
 (defn- dag-cbor-key< [a b]
   (let [^bytes ka (key-bytes a) ^bytes kb (key-bytes b)]
@@ -130,8 +131,8 @@
     (false? x) (.write o 0xf4)
     (cid-link? x) (encode-cid-link o x)
     (integer? x) (if (neg? x) (write-head o 1 (- (- x) 1)) (write-head o 0 x))
-    (string? x) (let [b (.getBytes ^String x "UTF-8")] (write-head o 3 (count b)) (.write o b))
-    (keyword? x) (let [b (.getBytes (name x) "UTF-8")] (write-head o 3 (count b)) (.write o b))
+    (string? x) (let [b (kbytes/utf8-bytes ^String x)] (write-head o 3 (count b)) (.write o b))
+    (keyword? x) (let [b (kbytes/utf8-bytes (name x))] (write-head o 3 (count b)) (.write o b))
     (bytes? x) (do (write-head o 2 (count x)) (.write o ^bytes x))
     (map? x) (encode-pairs o (sort-by key dag-cbor-key< (seq x)))
     (sequential? x) (do (write-head o 4 (count x)) (doseq [e x] (encode-into o e)))
@@ -191,7 +192,7 @@
         0 (read-arg in info)
         1 (- (- (read-arg in info)) 1)
         2 (read-bytes in (read-arg in info))
-        3 (String. (read-bytes in (read-arg in info)) "UTF-8")
+        3 (kbytes/utf8-string (read-bytes in (read-arg in info)))
         4 (vec (repeatedly (read-arg in info) #(decode-from in)))
         5 (into {} (repeatedly (read-arg in info) #(let [k (decode-from in)] [k (decode-from in)])))
         6 (let [tag (read-arg in info)]
