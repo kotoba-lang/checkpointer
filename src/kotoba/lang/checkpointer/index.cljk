@@ -20,9 +20,8 @@
   `kotoba.lang.checkpointer.sidecar` (a JVM daemon) and from JVM test code,
   never from the portable core."
   #?(:clj (:require [json.data-json :as json]
-                     [clojure.java.io :as io]
-                     [kotoba.lang.checkpointer.fsutil :as fs]))
-  #?(:clj (:import (java.io File))))
+                     [kotoba.io :as io]
+                     [kotoba.lang.checkpointer.fsutil :as fs])))
 
 (defn index-key
   "row (or any map with these 4 string keys) -> a NUL-joined composite key,
@@ -74,14 +73,14 @@
 #?(:clj
 (do
 
-(defn- index-file ^File [state-dir] (io/file (str state-dir) "index.json"))
+(defn- index-file [state-dir] (io/file (str state-dir) "index.json"))
 
 (defn load-index!
   "Reads <state-dir>/index.json (if present) into a {index-key -> row} map.
   Returns {} if no file exists yet."
   [state-dir]
   (let [f (index-file state-dir)]
-    (if (.exists f)
+    (if (io/exists? f)
       (let [rows (json/read-str (slurp f))]
         (into {} (map (fn [r] [(index-key r) r])) rows))
       {})))
